@@ -4,17 +4,12 @@ resource "aws_instance" "myinstance" {
   instance_type = var.instance_type
 }
 
-resource "aws_instance" "myinstance02" {
-  ami           = var.instance_ami_mumbai
-  count         = var.instance_count
-  instance_type = var.instance_type
-}
 
 resource "aws_vpc" "myvpc" {
   cidr_block = "10.0.0.0/16"
 }
 
-resource "aws_s3_bucket" "example" {
+resource "aws_s3_bucket" "my_bucket" {
   bucket = var.bucket_name
 
   tags = {
