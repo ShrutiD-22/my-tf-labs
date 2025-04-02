@@ -19,14 +19,13 @@ pipeline {
                 sh 'terraform fmt || true'  // Prevent failure on warnings
             }
         }		
-        stage('Terraform init') {
-            steps {
-                echo 'Initializing Terraform...'
-                withCredentials([aws(credentialsId: 'terraform-aws-airindia-jenkins', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh 'terraform init'
-                }
-            }
-        }
+      stage('Terraform Init') {
+    steps {
+        echo 'Initializing Terraform...'
+        sh 'terraform init -migrate-state'
+    }
+}
+
         stage('Terraform Plan') {
             steps {
                 echo 'Generating Terraform Plan...'
