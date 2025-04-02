@@ -6,33 +6,34 @@ pipeline {
 
     agent any
 
+    environment {
+    AWS_ACCESS_KEY_ID     = credentials('terraform-aws-airindia-jenkins')
+    AWS_SECRET_ACCESS_KEY = credentials('terraform-aws-airindia-jenkins')
+    }
     stages {
         stage('Terraform Version') {
             steps {
-                echo 'Checking Terraform Version...'
+                echo 'Terraform Initialization is In Progress!'
                 sh 'terraform --version'
             }
         }
         stage('Terraform format') {
             steps {
-                echo 'Running Terraform Formatting...'
-                sh 'terraform fmt || true'  // Prevent failure on warnings
+                echo 'Terraform Initialization is In Progress!'
+                sh 'terraform fmt'
             }
         }		
-      stage('Terraform Init') {
-    steps {
-        echo 'Initializing Terraform...'
-        sh 'terraform init -migrate-state'
-    }
-}
-
+        stage('Terraform init') {
+            steps {
+                echo 'Terraform Initialization is In Progress!'
+                sh 'terraform init'
+            }
+        }
         stage('Terraform Plan') {
             steps {
-                echo 'Generating Terraform Plan...'
-                withCredentials([aws(credentialsId: 'terraform-aws-airindia-jenkins', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh 'terraform plan -var-file=terraform.tfvars -out=tfplan.binary'
-                    sh 'terraform show tfplan.binary > tfplan.txt'
-                }
+                echo 'Terraform Initialization is In Progress!'
+                sh 'terraform plan -var-file=terraform.tfvars -out=tfplan.txt'
+
             }
         }
         stage('Approval') {
@@ -52,17 +53,10 @@ pipeline {
         }       
         stage('Terraform Apply') {
             steps {
-                echo 'Applying Terraform Configuration...'
-                withCredentials([aws(credentialsId: 'terraform-aws-airindia-jenkins', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    sh 'terraform apply --auto-approve tfplan.binary'
-                }
-            }
-        }
-        stage('Cleanup') {
-            steps {
-                echo 'Cleaning up temporary files...'
-                sh 'rm -f tfplan.binary tfplan.txt'
+                echo 'Terraform Apply'
+                sh 'terraform apply --auto-approve'
             }
         }
 	}
+
 }
